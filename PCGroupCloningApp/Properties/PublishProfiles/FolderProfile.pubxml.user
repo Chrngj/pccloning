@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- https://go.microsoft.com/fwlink/?LinkID=208121. -->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\inetpub\wwwroot\PCGroupCloningApp</_PublishTargetUrl>
+    <History>True|2025-08-20T13:32:37.3257925Z||;True|2025-08-20T15:30:57.4350447+02:00||;True|2025-08-20T15:26:51.0518910+02:00||;True|2025-08-20T15:22:46.1259290+02:00||;True|2025-08-20T15:08:00.8465455+02:00||;True|2025-08-20T15:04:33.5462698+02:00||;True|2025-08-20T14:55:11.6931191+02:00||;True|2025-08-20T14:11:19.8700016+02:00||;True|2025-08-20T14:05:38.7407090+02:00||;True|2025-08-20T13:32:17.9904928+02:00||;True|2025-08-14T11:32:44.2551472+02:00||;True|2025-08-14T11:13:16.1368624+02:00||;True|2025-08-14T10:09:36.5571448+02:00||;True|2025-08-14T09:32:22.2525730+02:00||;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+</Project>

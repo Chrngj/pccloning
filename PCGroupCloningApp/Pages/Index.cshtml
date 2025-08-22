@@ -1,0 +1,223 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "PC Group Cloning";
+}
+
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-3">
+                <i class="fas fa-clone"></i> PC Group Cloning
+            </h2>
+        </div>
+    </div>
+
+    <!-- Step 1: Source and Target Computer Selection - Side by Side -->
+    <div class="row mb-3">
+        <!-- Source Computer -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-search"></i> Source Computer (Template)
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <label for="sourceComputerSearch" class="form-label">Search Source Computer</label>
+                    <input type="text" id="sourceComputerSearch" class="form-control mb-2" placeholder="Type computer name..." autocomplete="off">
+                    <div id="sourceComputerDropdown" class="dropdown-menu w-100" style="display: none;"></div>
+
+                    <div id="sourceComputerInfo" style="display: none;">
+                        <div class="alert alert-info mb-0">
+                            <strong id="selectedSourceComputer"></strong><br>
+                            <small>OU: <span id="sourceComputerOU"></span></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Target Computer -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-bullseye"></i> Target Computer (Destination)
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <label for="targetComputerSearch" class="form-label">Search Target Computer</label>
+                    <input type="text" id="targetComputerSearch" class="form-control mb-2" placeholder="Type computer name..." autocomplete="off">
+                    <div id="targetComputerDropdown" class="dropdown-menu w-100" style="display: none;"></div>
+
+                    <div id="targetComputerInfo" style="display: none;">
+                        <div class="alert alert-success mb-0">
+                            <strong id="selectedTargetComputer"></strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2: Groups Selection and Additional Options -->
+    <div class="row">
+        <!-- Groups Selection - Smaller and Scrollable -->
+        <div class="col-md-6">
+            <div id="sourceGroupsCard" class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">
+                            <i class="fas fa-users"></i> Groups to Clone (<span id="groupCount">0</span>)
+                        </h6>
+                        <div>
+                            <button type="button" id="selectAllGroups" class="btn btn-sm btn-outline-primary">All</button>
+                            <button type="button" id="deselectAllGroups" class="btn btn-sm btn-outline-secondary">None</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-2" style="max-height: 300px; overflow-y: auto;">
+                    <div id="sourceGroupsList" class="row">
+                        <div class="col-12">
+                            <div class="text-muted text-center py-4">
+                                <i class="fas fa-arrow-up"></i><br>
+                                Select a source computer to see its groups
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Groups and Controls -->
+        <div class="col-md-6">
+            <div id="additionalGroupsCard" class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-plus"></i> Additional Groups (Optional)
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <label for="additionalGroupSearch" class="form-label">Search Additional Groups</label>
+                    <input type="text" id="additionalGroupSearch" class="form-control mb-2" placeholder="Type group name..." autocomplete="off">
+                    <div id="additionalGroupDropdown" class="dropdown-menu w-100" style="display: none;"></div>
+                    <div id="additionalGroupsList">
+                        <small class="text-muted">No additional groups selected</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview & Execute -->
+            <div id="previewCard" class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-eye"></i> Operation Summary
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <ul class="list-unstyled mb-3">
+                                <li><strong>Source:</strong> <span id="previewSource" class="text-muted">Not selected</span></li>
+                                <li><strong>Target:</strong> <span id="previewTarget" class="text-muted">Not selected</span></li>
+                                <li><strong>Groups:</strong> <span id="previewGroupCount">0</span> + <span id="previewAdditionalCount">0</span> additional</li>
+                            </ul>
+
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="moveToSameOU" checked>
+                                <label class="form-check-label" for="moveToSameOU">
+                                    Move target to same OU as source
+                                </label>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="button" id="executeClone" class="btn btn-success" disabled>
+                                    <i class="fas fa-play"></i> Execute Clone Operation
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div class="row mt-3">
+        <div class="col-12">
+            <div id="resultsCard" class="card" style="display: none;">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-check-circle"></i> Operation Results
+                    </h6>
+                </div>
+                <div class="card-body" id="resultsContent">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom styles for better UX */
+    .dropdown-menu {
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1050;
+    }
+
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .card-header h6 {
+        color: #495057;
+        font-weight: 600;
+    }
+
+    /* Compact group checkboxes */
+    #sourceGroupsList .form-check {
+        margin-bottom: 0.25rem;
+    }
+
+    #sourceGroupsList .form-check-label {
+        font-size: 0.9rem;
+        padding-left: 0.25rem;
+    }
+
+    /* Badge styling for additional groups */
+    .badge {
+        font-size: 0.8rem;
+    }
+
+    /* Alert improvements */
+    .alert {
+        border: none;
+        font-size: 0.9rem;
+    }
+
+    /* Scroll styling */
+    .card-body::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .card-body::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+
+    .card-body::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+
+        .card-body::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+</style>
+
+@section Scripts {
+    <script src="~/js/pc-cloning.js" asp-append-version="true"></script>
+}

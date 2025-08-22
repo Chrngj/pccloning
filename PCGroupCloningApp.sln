@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36310.24
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCGroupCloningApp", "PCGroupCloningApp\PCGroupCloningApp.csproj", "{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {68C58C17-9FB3-461F-B8DA-09583B9B9FBB}
+	EndGlobalSection
+EndGlobal

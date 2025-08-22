@@ -1,0 +1,9 @@
+﻿// Services/IEncryptionService.cs
+namespace PCGroupCloningApp.Services
+{
+    public interface IEncryptionService
+    {
+        string Encrypt(string plainText);
+        string Decrypt(string encryptedText);
+    }
+}
