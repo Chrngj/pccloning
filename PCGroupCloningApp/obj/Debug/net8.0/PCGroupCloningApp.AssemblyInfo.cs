@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PCGroupCloningApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0f9a607b431ee552752330f961aad47c96b1a121")]
 [assembly: System.Reflection.AssemblyProductAttribute("PCGroupCloningApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PCGroupCloningApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

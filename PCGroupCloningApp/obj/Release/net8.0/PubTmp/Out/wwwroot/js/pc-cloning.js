@@ -1,4 +1,4 @@
-﻿// wwwroot/js/pc-cloning.js - Fixed version
+﻿// wwwroot/js/pc-cloning.js - Complete version with keyboard navigation
 class PCCloningApp {
     constructor() {
         this.sourceComputer = '';
@@ -7,6 +7,8 @@ class PCCloningApp {
         this.selectedGroups = [];
         this.additionalGroups = [];
         this.searchTimeout = null;
+        this.currentDropdown = null;
+        this.selectedIndex = -1;
 
         this.initializeEventHandlers();
         this.setDefaultCheckboxState();
@@ -23,14 +25,26 @@ class PCCloningApp {
             this.handleComputerSearch(e.target.value, 'source');
         });
 
+        document.getElementById('sourceComputerSearch').addEventListener('keydown', (e) => {
+            this.handleKeyDown(e, 'sourceComputerDropdown', 'source');
+        });
+
         // Target computer search
         document.getElementById('targetComputerSearch').addEventListener('input', (e) => {
             this.handleComputerSearch(e.target.value, 'target');
         });
 
+        document.getElementById('targetComputerSearch').addEventListener('keydown', (e) => {
+            this.handleKeyDown(e, 'targetComputerDropdown', 'target');
+        });
+
         // Additional group search
         document.getElementById('additionalGroupSearch').addEventListener('input', (e) => {
             this.handleGroupSearch(e.target.value);
+        });
+
+        document.getElementById('additionalGroupSearch').addEventListener('keydown', (e) => {
+            this.handleKeyDown(e, 'additionalGroupDropdown', 'additionalGroup');
         });
 
         // Group selection buttons
@@ -55,6 +69,66 @@ class PCCloningApp {
         });
     }
 
+    handleKeyDown(e, dropdownId, type) {
+        const dropdown = document.getElementById(dropdownId);
+
+        if (dropdown.style.display === 'none') return;
+
+        const items = dropdown.querySelectorAll('.dropdown-item');
+        if (items.length === 0) return;
+
+        switch (e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                this.selectedIndex = Math.min(this.selectedIndex + 1, items.length - 1);
+                this.updateHighlight(items);
+                this.currentDropdown = { dropdown, type, items };
+                break;
+
+            case 'ArrowUp':
+                e.preventDefault();
+                this.selectedIndex = Math.max(this.selectedIndex - 1, 0);
+                this.updateHighlight(items);
+                this.currentDropdown = { dropdown, type, items };
+                break;
+
+            case 'Enter':
+                e.preventDefault();
+                if (this.selectedIndex >= 0 && this.selectedIndex < items.length) {
+                    const selectedItem = items[this.selectedIndex];
+                    selectedItem.click();
+                }
+                break;
+
+            case 'Escape':
+                e.preventDefault();
+                this.hideDropdown(dropdownId);
+                this.resetSelection();
+                break;
+        }
+    }
+
+    updateHighlight(items) {
+        // Remove all highlights
+        items.forEach(item => item.classList.remove('dropdown-item-highlighted'));
+
+        // Highlight selected item
+        if (this.selectedIndex >= 0 && this.selectedIndex < items.length) {
+            items[this.selectedIndex].classList.add('dropdown-item-highlighted');
+
+            // Scroll into view if needed
+            items[this.selectedIndex].scrollIntoView({
+                block: 'nearest',
+                behavior: 'smooth'
+            });
+        }
+    }
+
+    resetSelection() {
+        this.selectedIndex = -1;
+        this.currentDropdown = null;
+    }
+
     resetFromStep(step) {
         // Reset kun specifikke ting, ikke skjul kort
         if (step <= 1) {
@@ -63,15 +137,12 @@ class PCCloningApp {
             this.sourceComputerOU = '';
             this.selectedGroups = [];
             document.getElementById('sourceComputerInfo').style.display = 'none';
-            // Don't hide sourceGroupsCard - keep it visible
         }
 
         if (step <= 2) {
             // Reset target computer UDEN at skjule kort
             this.targetComputer = '';
-            // Don't clear the search field value
             document.getElementById('targetComputerInfo').style.display = 'none';
-            // Don't hide cards - keep them visible
         }
 
         if (step <= 3) {
@@ -79,12 +150,11 @@ class PCCloningApp {
             this.additionalGroups = [];
             document.getElementById('additionalGroupSearch').value = '';
             this.updateAdditionalGroupsList();
-            // Don't hide additionalGroupsCard
         }
 
         if (step <= 4) {
             // Reset preview and results
-            this.updatePreview(); // Update instead of hide
+            this.updatePreview();
             document.getElementById('resultsCard').style.display = 'none';
         }
 
@@ -114,12 +184,13 @@ class PCCloningApp {
 
     displayComputerDropdown(computers, type) {
         const dropdown = document.getElementById(type + 'ComputerDropdown');
+        this.resetSelection(); // Reset keyboard selection
 
         if (computers.length === 0) {
             dropdown.innerHTML = '<div class="dropdown-item-text">No computers found</div>';
         } else {
-            dropdown.innerHTML = computers.map(computer =>
-                `<button type="button" class="dropdown-item" onclick="app.selectComputer('${computer}', '${type}')">${computer}</button>`
+            dropdown.innerHTML = computers.map((computer, index) =>
+                `<button type="button" class="dropdown-item" data-index="${index}" onclick="app.selectComputer('${computer}', '${type}')">${computer}</button>`
             ).join('');
         }
 
@@ -132,7 +203,7 @@ class PCCloningApp {
             this.resetFromStep(1);
 
             this.sourceComputer = computerName;
-            document.getElementById('sourceComputerSearch').value = computerName; // Set search field value
+            document.getElementById('sourceComputerSearch').value = computerName;
             document.getElementById('selectedSourceComputer').textContent = computerName;
 
             // Get computer OU and groups
@@ -140,7 +211,7 @@ class PCCloningApp {
 
         } else if (type === 'target') {
             this.targetComputer = computerName;
-            document.getElementById('targetComputerSearch').value = computerName; // Set search field value  
+            document.getElementById('targetComputerSearch').value = computerName;
             document.getElementById('selectedTargetComputer').textContent = computerName;
             document.getElementById('targetComputerInfo').style.display = 'block';
 
@@ -165,11 +236,9 @@ class PCCloningApp {
 
             this.displaySourceGroups(groups);
             document.getElementById('sourceComputerInfo').style.display = 'block';
-            // Don't show/hide cards - they're always visible now
 
         } catch (error) {
             console.error('Error loading computer info:', error);
-            this.showError('Error loading computer information');
         }
     }
 
@@ -209,13 +278,9 @@ class PCCloningApp {
         const checkboxes = document.querySelectorAll('.group-checkbox:checked');
         this.selectedGroups = Array.from(checkboxes).map(cb => cb.value);
 
-        // Vis target computer step uanset om der er grupper eller ej
-        document.getElementById('targetComputerCard').style.display = 'block';
-
-        // Opdater preview hvis target computer også er valgt
-        if (this.targetComputer) {
-            this.updatePreview();
-        }
+        // Opdater preview og execute button
+        this.updatePreview();
+        this.updateExecuteButton();
     }
 
     selectAllGroups(select) {
@@ -248,12 +313,13 @@ class PCCloningApp {
 
     displayGroupDropdown(groups) {
         const dropdown = document.getElementById('additionalGroupDropdown');
+        this.resetSelection(); // Reset keyboard selection
 
         if (groups.length === 0) {
             dropdown.innerHTML = '<div class="dropdown-item-text">No groups found</div>';
         } else {
-            dropdown.innerHTML = groups.map(group =>
-                `<button type="button" class="dropdown-item" onclick="app.addAdditionalGroup('${group}')">${group}</button>`
+            dropdown.innerHTML = groups.map((group, index) =>
+                `<button type="button" class="dropdown-item" data-index="${index}" onclick="app.addAdditionalGroup('${group}')">${group}</button>`
             ).join('');
         }
 
@@ -292,19 +358,26 @@ class PCCloningApp {
         this.updatePreview();
     }
 
-    showNextStep() {
-        if (this.sourceComputer && this.targetComputer) {
-            document.getElementById('additionalGroupsCard').style.display = 'block';
-            document.getElementById('previewCard').style.display = 'block';
-            this.updatePreview();
-        }
-    }
-
     updatePreview() {
-        document.getElementById('previewSource').textContent = this.sourceComputer;
-        document.getElementById('previewTarget').textContent = this.targetComputer;
+        document.getElementById('previewSource').textContent = this.sourceComputer || 'Not selected';
+        document.getElementById('previewTarget').textContent = this.targetComputer || 'Not selected';
         document.getElementById('previewGroupCount').textContent = this.selectedGroups.length;
         document.getElementById('previewAdditionalCount').textContent = this.additionalGroups.length;
+    }
+
+    updateExecuteButton() {
+        const executeButton = document.getElementById('executeClone');
+        if (!executeButton) return; // Safety check
+
+        const canExecute = this.sourceComputer && this.targetComputer;
+
+        executeButton.disabled = !canExecute;
+
+        if (!canExecute) {
+            executeButton.innerHTML = '<i class="fas fa-play"></i> Select computers to continue';
+        } else {
+            executeButton.innerHTML = '<i class="fas fa-play"></i> Execute Clone Operation';
+        }
     }
 
     async executeClone() {
@@ -338,7 +411,7 @@ class PCCloningApp {
             this.showError('Error executing clone operation');
         } finally {
             executeButton.disabled = false;
-            executeButton.innerHTML = '<i class="fas fa-play"></i> Execute Clone';
+            executeButton.innerHTML = '<i class="fas fa-play"></i> Execute Clone Operation';
         }
     }
 
@@ -406,30 +479,19 @@ class PCCloningApp {
 
     hideDropdown(dropdownId) {
         document.getElementById(dropdownId).style.display = 'none';
+        this.resetSelection(); // Reset keyboard selection when hiding
     }
 
     hideAllDropdowns() {
         this.hideDropdown('sourceComputerDropdown');
         this.hideDropdown('targetComputerDropdown');
         this.hideDropdown('additionalGroupDropdown');
+        this.resetSelection();
     }
 
     showError(message) {
         // Simple error display - could be enhanced with toast notifications
         alert(message);
-    }
-
-    updateExecuteButton() {
-        const executeButton = document.getElementById('executeClone');
-        const canExecute = this.sourceComputer && this.targetComputer;
-
-        executeButton.disabled = !canExecute;
-
-        if (!canExecute) {
-            executeButton.innerHTML = '<i class="fas fa-play"></i> Select computers to continue';
-        } else {
-            executeButton.innerHTML = '<i class="fas fa-play"></i> Execute Clone Operation';
-        }
     }
 }
 

@@ -1,0 +1,258 @@
+﻿@page "/admin/management"
+@model PCGroupCloningApp.Pages.Admin.ManagementModel
+@{
+    ViewData["Title"] = "Management";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <h2 class="mb-4">Management</h2>
+
+            @if (!string.IsNullOrEmpty(Model.StatusMessage))
+            {
+                <div class="alert @(Model.StatusMessage.Contains("successfully") || Model.StatusMessage.Contains("✅") ? "alert-success" : "alert-danger")" role="alert">
+                    @Model.StatusMessage
+                </div>
+            }
+
+            <!-- Service Account Section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Service Account Configuration</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.HasExistingAccount)
+                    {
+                        <div class="alert alert-info" role="alert">
+                            A service account is currently configured. You can update the credentials below.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            No service account configured. The application is currently using Windows Authentication.
+                        </div>
+                    }
+
+                    <form method="post" asp-page-handler="SaveServiceAccount">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label asp-for="ServiceAccount.Domain" class="form-label"></label>
+                                    <input asp-for="ServiceAccount.Domain" class="form-control" readonly />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label asp-for="ServiceAccount.Username" class="form-label"></label>
+                                    <input asp-for="ServiceAccount.Username" class="form-control" placeholder="e.g., svc-pccloning" />
+                                    <span asp-validation-for="ServiceAccount.Username" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label asp-for="ServiceAccount.Password" class="form-label"></label>
+                                    <input asp-for="ServiceAccount.Password" class="form-control" />
+                                    <span asp-validation-for="ServiceAccount.Password" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" formaction="?handler=TestServiceAccount" class="btn btn-outline-primary">
+                                Test Connection
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                Save Credentials
+                            </button>
+                            <button type="submit" asp-page-handler="TestSave" class="btn btn-danger">TEST SAVE</button>
+                            <button type="submit" asp-page-handler="DirectDatabaseTest" class="btn btn-warning">Direct DB Test</button>
+                        </div>
+                    </form>
+
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            <strong>Requirements:</strong> Domain user account with read permissions on Computer and Group objects,
+                            write permissions to modify group memberships, and permissions to move computers between OUs.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OU Configuration Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">OU Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        Configure where source computers should be moved when they are replaced during PC cloning operations.
+                    </p>
+
+                    @if (!string.IsNullOrEmpty(Model.CurrentRetiredOU))
+                    {
+                        <div class="alert alert-info" role="alert">
+                            <strong>Current Retired Computers OU:</strong><br>
+                            <code>@Model.CurrentRetiredOU</code>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            No retired computers OU configured. Source computers will not be moved automatically.
+                        </div>
+                    }
+
+                    <form method="post" asp-page-handler="SaveOUConfig">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label asp-for="OUConfig.RetiredComputersOU" class="form-label"></label>
+                                    <input asp-for="OUConfig.RetiredComputersOU" id="ouSearch" class="form-control" placeholder="Search for OU..." autocomplete="off" />
+                                    <div id="ouDropdown" class="dropdown-menu w-100" style="display: none;"></div>
+                                    <span asp-validation-for="OUConfig.RetiredComputersOU" class="text-danger"></span>
+                                    <div class="form-text">Search for and select the OU where retired computers should be moved.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <div class="mb-3">
+                                    <button type="submit" class="btn btn-success">
+                                        Save OU Configuration
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // OU Search functionality
+    let ouSearchTimeout = null;
+
+    document.getElementById('ouSearch').addEventListener('input', function(e) {
+        const term = e.target.value;
+        clearTimeout(ouSearchTimeout);
+
+        if (term.length < 2) {
+            hideOUDropdown();
+            return;
+        }
+
+        ouSearchTimeout = setTimeout(async () => {
+            try {
+                const response = await fetch(`/api/ou/search?term=${encodeURIComponent(term)}`);
+                const ous = await response.json();
+                displayOUDropdown(ous);
+            } catch (error) {
+                console.error('Error searching OUs:', error);
+            }
+        }, 300);
+    });
+
+    document.getElementById('ouSearch').addEventListener('keydown', function(e) {
+        const dropdown = document.getElementById('ouDropdown');
+        const items = dropdown.querySelectorAll('.dropdown-item');
+
+        if (items.length === 0) return;
+
+        let selectedIndex = Array.from(items).findIndex(item => item.classList.contains('dropdown-item-highlighted'));
+
+        switch (e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+                updateOUHighlight(items, selectedIndex);
+                break;
+
+            case 'ArrowUp':
+                e.preventDefault();
+                selectedIndex = Math.max(selectedIndex - 1, 0);
+                updateOUHighlight(items, selectedIndex);
+                break;
+
+            case 'Enter':
+                e.preventDefault();
+                if (selectedIndex >= 0 && selectedIndex < items.length) {
+                    items[selectedIndex].click();
+                }
+                break;
+
+            case 'Escape':
+                e.preventDefault();
+                hideOUDropdown();
+                break;
+        }
+    });
+
+    function displayOUDropdown(ous) {
+        const dropdown = document.getElementById('ouDropdown');
+
+        if (ous.length === 0) {
+            dropdown.innerHTML = '<div class="dropdown-item-text">No OUs found</div>';
+        } else {
+            dropdown.innerHTML = ous.map(ou =>
+                `<button type="button" class="dropdown-item" onclick="selectOU('${ou.replace(/'/g, "\\'")}')">${ou}</button>`
+            ).join('');
+        }
+
+        dropdown.style.display = 'block';
+    }
+
+    function selectOU(ouPath) {
+        document.getElementById('ouSearch').value = ouPath;
+        hideOUDropdown();
+    }
+
+    function updateOUHighlight(items, selectedIndex) {
+        items.forEach(item => item.classList.remove('dropdown-item-highlighted'));
+
+        if (selectedIndex >= 0 && selectedIndex < items.length) {
+            items[selectedIndex].classList.add('dropdown-item-highlighted');
+            items[selectedIndex].scrollIntoView({
+                block: 'nearest',
+                behavior: 'smooth'
+            });
+        }
+    }
+
+    function hideOUDropdown() {
+        document.getElementById('ouDropdown').style.display = 'none';
+    }
+
+    // Hide dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#ouSearch') && !e.target.closest('#ouDropdown')) {
+            hideOUDropdown();
+        }
+    });
+</script>
+
+<style>
+    .dropdown-menu {
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1050;
+    }
+
+    .dropdown-item-highlighted {
+        background-color: #0d6efd !important;
+        color: white !important;
+    }
+
+    .dropdown-item {
+        transition: background-color 0.1s ease;
+    }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

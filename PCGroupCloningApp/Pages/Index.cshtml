@@ -25,7 +25,7 @@
                 </div>
                 <div class="card-body">
                     <label for="sourceComputerSearch" class="form-label">Search Source Computer</label>
-                    <input type="text" id="sourceComputerSearch" class="form-control mb-2" placeholder="Type computer name..." autocomplete="off">
+                    <input type="text" id="sourceComputerSearch" class="form-control mb-2" placeholder="Type computer name..." autocomplete="off" tabindex="1">
                     <div id="sourceComputerDropdown" class="dropdown-menu w-100" style="display: none;"></div>
 
                     <div id="sourceComputerInfo" style="display: none;">
@@ -48,7 +48,7 @@
                 </div>
                 <div class="card-body">
                     <label for="targetComputerSearch" class="form-label">Search Target Computer</label>
-                    <input type="text" id="targetComputerSearch" class="form-control mb-2" placeholder="Type computer name..." autocomplete="off">
+                    <input type="text" id="targetComputerSearch" class="form-control mb-2" placeholder="Type computer name..." autocomplete="off" tabindex="2">
                     <div id="targetComputerDropdown" class="dropdown-menu w-100" style="display: none;"></div>
 
                     <div id="targetComputerInfo" style="display: none;">
@@ -72,8 +72,8 @@
                             <i class="fas fa-users"></i> Groups to Clone (<span id="groupCount">0</span>)
                         </h6>
                         <div>
-                            <button type="button" id="selectAllGroups" class="btn btn-sm btn-outline-primary">All</button>
-                            <button type="button" id="deselectAllGroups" class="btn btn-sm btn-outline-secondary">None</button>
+                            <button type="button" id="selectAllGroups" class="btn btn-sm btn-outline-primary" tabindex="4">All</button>
+                            <button type="button" id="deselectAllGroups" class="btn btn-sm btn-outline-secondary" tabindex="5">None</button>
                         </div>
                     </div>
                 </div>
@@ -100,7 +100,7 @@
                 </div>
                 <div class="card-body">
                     <label for="additionalGroupSearch" class="form-label">Search Additional Groups</label>
-                    <input type="text" id="additionalGroupSearch" class="form-control mb-2" placeholder="Type group name..." autocomplete="off">
+                    <input type="text" id="additionalGroupSearch" class="form-control mb-2" placeholder="Type group name..." autocomplete="off" tabindex="6">
                     <div id="additionalGroupDropdown" class="dropdown-menu w-100" style="display: none;"></div>
                     <div id="additionalGroupsList">
                         <small class="text-muted">No additional groups selected</small>
@@ -125,14 +125,14 @@
                             </ul>
 
                             <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="moveToSameOU" checked>
+                                <input class="form-check-input" type="checkbox" id="moveToSameOU" checked tabindex="7">
                                 <label class="form-check-label" for="moveToSameOU">
                                     Move target to same OU as source
                                 </label>
                             </div>
 
                             <div class="d-grid">
-                                <button type="button" id="executeClone" class="btn btn-success" disabled>
+                                <button type="button" id="executeClone" class="btn btn-success" disabled tabindex="3">
                                     <i class="fas fa-play"></i> Execute Clone Operation
                                 </button>
                             </div>
@@ -215,6 +215,20 @@
 
         .card-body::-webkit-scrollbar-thumb:hover {
             background: #a8a8a8;
+        }
+
+    /* Keyboard navigation highlighting */
+    .dropdown-item-highlighted {
+        background-color: #0d6efd !important;
+        color: white !important;
+    }
+
+    .dropdown-item {
+        transition: background-color 0.1s ease;
+    }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
         }
 </style>
 

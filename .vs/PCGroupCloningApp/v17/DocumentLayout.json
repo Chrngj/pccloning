@@ -3,16 +3,8 @@
   "WorkspaceRootPath": "C:\\web-projekter\\pccloning\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\services\\iactivedirectoryservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|solutionrelative:pcgroupcloningapp\\services\\iactivedirectoryservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\wwwroot\\js\\pc-cloning.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|solutionrelative:pcgroupcloningapp\\wwwroot\\js\\pc-cloning.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\pages\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|solutionrelative:pcgroupcloningapp\\pages\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\pages\\admin\\management.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|solutionrelative:pcgroupcloningapp\\pages\\admin\\management.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\services\\activedirectoryservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -21,6 +13,54 @@
     {
       "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\api\\clonecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|solutionrelative:pcgroupcloningapp\\api\\clonecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\wwwroot\\js\\pc-cloning.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|solutionrelative:pcgroupcloningapp\\wwwroot\\js\\pc-cloning.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\pages\\admin\\management.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|solutionrelative:pcgroupcloningapp\\pages\\admin\\management.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\api\\oucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|solutionrelative:pcgroupcloningapp\\api\\oucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|solutionrelative:pcgroupcloningapp\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|solutionrelative:pcgroupcloningapp\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\services\\serviceaccountservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|solutionrelative:pcgroupcloningapp\\services\\serviceaccountservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\pages\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|solutionrelative:pcgroupcloningapp\\pages\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\pages\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|solutionrelative:pcgroupcloningapp\\pages\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\services\\ouservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|solutionrelative:pcgroupcloningapp\\services\\ouservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\models\\ouconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|solutionrelative:pcgroupcloningapp\\models\\ouconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\services\\iouservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|solutionrelative:pcgroupcloningapp\\services\\iouservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\services\\iactivedirectoryservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|solutionrelative:pcgroupcloningapp\\services\\iactivedirectoryservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{66D26699-BD25-4D1A-AC36-2AA19C1A25CE}|PCGroupCloningApp\\PCGroupCloningApp.csproj|c:\\web-projekter\\pccloning\\pcgroupcloningapp\\api\\computercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -38,58 +78,123 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Pages\\Index.cshtml",
-              "RelativeDocumentMoniker": "PCGroupCloningApp\\Pages\\Index.cshtml",
-              "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Pages\\Index.cshtml",
-              "RelativeToolTip": "PCGroupCloningApp\\Pages\\Index.cshtml",
-              "ViewState": "AgIAAN4AAAAAAAAAAAAAAN4AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-20T13:22:16.126Z",
+              "DocumentIndex": 8,
+              "Title": "ServiceAccountService.cs",
+              "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Services\\ServiceAccountService.cs",
+              "RelativeDocumentMoniker": "PCGroupCloningApp\\Services\\ServiceAccountService.cs",
+              "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Services\\ServiceAccountService.cs",
+              "RelativeToolTip": "PCGroupCloningApp\\Services\\ServiceAccountService.cs",
+              "ViewState": "AgIAAIQAAAAAAAAAAAAmwI8AAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-22T10:01:26.204Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "CloneController.cs",
-              "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Api\\CloneController.cs",
-              "RelativeDocumentMoniker": "PCGroupCloningApp\\Api\\CloneController.cs",
-              "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Api\\CloneController.cs",
-              "RelativeToolTip": "PCGroupCloningApp\\Api\\CloneController.cs",
-              "ViewState": "AgIAAMUAAAAAAAAAAAAQwNsAAAABAAAAAAAAAA==",
+              "DocumentIndex": 9,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Pages\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "PCGroupCloningApp\\Pages\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Pages\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "PCGroupCloningApp\\Pages\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAACsAAAAAAAAAAAAlwDYAAABTAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-08-22T09:20:01.283Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Program.cs",
+              "RelativeDocumentMoniker": "PCGroupCloningApp\\Program.cs",
+              "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Program.cs",
+              "RelativeToolTip": "PCGroupCloningApp\\Program.cs",
+              "ViewState": "AgIAACIAAAAAAAAAAAAswDYAAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-20T12:49:24.557Z",
+              "WhenOpened": "2025-08-22T09:17:04.896Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "IActiveDirectoryService.cs",
-              "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Services\\IActiveDirectoryService.cs",
-              "RelativeDocumentMoniker": "PCGroupCloningApp\\Services\\IActiveDirectoryService.cs",
-              "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Services\\IActiveDirectoryService.cs",
-              "RelativeToolTip": "PCGroupCloningApp\\Services\\IActiveDirectoryService.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAABAAAABnAAAAAAAAAA==",
+              "Title": "Management.cshtml.cs",
+              "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Pages\\Admin\\Management.cshtml.cs",
+              "RelativeDocumentMoniker": "PCGroupCloningApp\\Pages\\Admin\\Management.cshtml.cs",
+              "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Pages\\Admin\\Management.cshtml.cs",
+              "RelativeToolTip": "PCGroupCloningApp\\Pages\\Admin\\Management.cshtml.cs",
+              "ViewState": "AgIAAMsAAAAAAAAAAAAswNoAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-20T12:37:53.982Z",
+              "WhenOpened": "2025-08-22T09:14:50.123Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "ActiveDirectoryService.cs",
-              "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Services\\ActiveDirectoryService.cs",
-              "RelativeDocumentMoniker": "PCGroupCloningApp\\Services\\ActiveDirectoryService.cs",
-              "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Services\\ActiveDirectoryService.cs",
-              "RelativeToolTip": "PCGroupCloningApp\\Services\\ActiveDirectoryService.cs",
-              "ViewState": "AgIAAHsBAAAAAAAAAAAQwIsBAAABAAAAAAAAAA==",
+              "DocumentIndex": 4,
+              "Title": "Management.cshtml",
+              "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Pages\\Admin\\Management.cshtml",
+              "RelativeDocumentMoniker": "PCGroupCloningApp\\Pages\\Admin\\Management.cshtml",
+              "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Pages\\Admin\\Management.cshtml",
+              "RelativeToolTip": "PCGroupCloningApp\\Pages\\Admin\\Management.cshtml",
+              "ViewState": "AgIAADMAAAAAAAAAAAAiwEUAAACHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-08-22T09:14:17.777Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "OUController.cs",
+              "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Api\\OUController.cs",
+              "RelativeDocumentMoniker": "PCGroupCloningApp\\Api\\OUController.cs",
+              "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Api\\OUController.cs",
+              "RelativeToolTip": "PCGroupCloningApp\\Api\\OUController.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAQwCcAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-20T11:30:44.078Z",
+              "WhenOpened": "2025-08-22T09:08:03.348Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "OUService.cs",
+              "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Services\\OUService.cs",
+              "RelativeDocumentMoniker": "PCGroupCloningApp\\Services\\OUService.cs",
+              "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Services\\OUService.cs",
+              "RelativeToolTip": "PCGroupCloningApp\\Services\\OUService.cs",
+              "ViewState": "AgIAAGEAAAAAAAAAAAAqwHgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-22T09:07:26.937Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "IOUService.cs",
+              "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Services\\IOUService.cs",
+              "RelativeDocumentMoniker": "PCGroupCloningApp\\Services\\IOUService.cs",
+              "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Services\\IOUService.cs",
+              "RelativeToolTip": "PCGroupCloningApp\\Services\\IOUService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-22T09:06:42.347Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ApplicationDbContext.cs",
+              "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Data\\ApplicationDbContext.cs",
+              "RelativeDocumentMoniker": "PCGroupCloningApp\\Data\\ApplicationDbContext.cs",
+              "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Data\\ApplicationDbContext.cs",
+              "RelativeToolTip": "PCGroupCloningApp\\Data\\ApplicationDbContext.cs",
+              "ViewState": "AgIAABwAAAAAAAAAAAAuwDkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-22T09:04:24.78Z",
               "EditorCaption": ""
             },
             {
@@ -106,7 +211,76 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 12,
+              "Title": "OUConfiguration.cs",
+              "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Models\\OUConfiguration.cs",
+              "RelativeDocumentMoniker": "PCGroupCloningApp\\Models\\OUConfiguration.cs",
+              "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Models\\OUConfiguration.cs",
+              "RelativeToolTip": "PCGroupCloningApp\\Models\\OUConfiguration.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-22T09:04:02.271Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Pages\\Index.cshtml",
+              "RelativeDocumentMoniker": "PCGroupCloningApp\\Pages\\Index.cshtml",
+              "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Pages\\Index.cshtml",
+              "RelativeToolTip": "PCGroupCloningApp\\Pages\\Index.cshtml",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAiwBQAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-08-20T13:22:16.126Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "CloneController.cs",
+              "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Api\\CloneController.cs",
+              "RelativeDocumentMoniker": "PCGroupCloningApp\\Api\\CloneController.cs",
+              "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Api\\CloneController.cs",
+              "RelativeToolTip": "PCGroupCloningApp\\Api\\CloneController.cs",
+              "ViewState": "AgIAAMUAAAAAAAAAAAAQwNsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-20T12:49:24.557Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "IActiveDirectoryService.cs",
+              "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Services\\IActiveDirectoryService.cs",
+              "RelativeDocumentMoniker": "PCGroupCloningApp\\Services\\IActiveDirectoryService.cs",
+              "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Services\\IActiveDirectoryService.cs",
+              "RelativeToolTip": "PCGroupCloningApp\\Services\\IActiveDirectoryService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-20T12:37:53.982Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ActiveDirectoryService.cs",
+              "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Services\\ActiveDirectoryService.cs",
+              "RelativeDocumentMoniker": "PCGroupCloningApp\\Services\\ActiveDirectoryService.cs",
+              "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Services\\ActiveDirectoryService.cs",
+              "RelativeToolTip": "PCGroupCloningApp\\Services\\ActiveDirectoryService.cs",
+              "ViewState": "AgIAAHsBAAAAAAAAAAAQwIsBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-20T11:30:44.078Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
               "Title": "ComputerController.cs",
               "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\Api\\ComputerController.cs",
               "RelativeDocumentMoniker": "PCGroupCloningApp\\Api\\ComputerController.cs",
@@ -119,20 +293,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "pc-cloning.js",
               "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\wwwroot\\js\\pc-cloning.js",
               "RelativeDocumentMoniker": "PCGroupCloningApp\\wwwroot\\js\\pc-cloning.js",
               "ToolTip": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\wwwroot\\js\\pc-cloning.js",
               "RelativeToolTip": "PCGroupCloningApp\\wwwroot\\js\\pc-cloning.js",
-              "ViewState": "AgIAAKEBAAAAAAAAAAAAwLcBAAADAAAAAAAAAA==",
+              "ViewState": "AgIAAOEBAAAAAAAAAAAqwPUBAAADAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2025-08-14T09:11:54.84Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 16,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\web-projekter\\pccloning\\PCGroupCloningApp\\appsettings.json",
               "RelativeDocumentMoniker": "PCGroupCloningApp\\appsettings.json",

@@ -356,3 +356,4 @@ C:\web-projekter\pccloning\PCGroupCloningApp\obj\Release\net8.0\refint\PCGroupCl
 C:\web-projekter\pccloning\PCGroupCloningApp\obj\Release\net8.0\PCGroupCloningApp.pdb
 C:\web-projekter\pccloning\PCGroupCloningApp\obj\Release\net8.0\PCGroupCloningApp.genruntimeconfig.cache
 C:\web-projekter\pccloning\PCGroupCloningApp\obj\Release\net8.0\ref\PCGroupCloningApp.dll
+C:\web-projekter\pccloning\PCGroupCloningApp\obj\Release\net8.0\PCGroupCloningApp.sourcelink.json

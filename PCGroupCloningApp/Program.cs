@@ -21,7 +21,7 @@ builder.Services.AddScoped<IAuditService, AuditService>();
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 builder.Services.AddScoped<IServiceAccountService, ServiceAccountService>();
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.AddScoped<IOUService, OUService>();
 // Windows Authentication
 builder.Services.AddAuthentication(IISDefaults.AuthenticationScheme);
 
