@@ -25,6 +25,9 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/AuditLog">Audit Log</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-page="/Admin/Management">Management</a>
+                        </li>
                     </ul>
                     <div class="navbar-text text-white">
                         Welcome, @User.Identity?.Name
@@ -44,16 +47,6 @@
             &copy; 2025 - PC Group Cloning App
         </div>
     </footer>
-    <!-- I _Layout.cshtml navigation -->
-    <li class="nav-item">
-        <a class="nav-link" asp-area="" asp-page="/Index">Clone Groups</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" asp-area="" asp-page="/AuditLog">Audit Log</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" asp-area="" asp-page="/Admin/Management">Management</a>
-    </li>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

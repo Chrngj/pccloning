@@ -10,12 +10,18 @@ namespace PCGroupCloningApp.Api
     {
         private readonly IActiveDirectoryService _adService;
         private readonly IAuditService _auditService;
+        private readonly IOUService _ouService;
         private readonly ILogger<CloneController> _logger;
 
-        public CloneController(IActiveDirectoryService adService, IAuditService auditService, ILogger<CloneController> logger)
+        public CloneController(
+            IActiveDirectoryService adService,
+            IAuditService auditService,
+            IOUService ouService,
+            ILogger<CloneController> logger)
         {
             _adService = adService;
             _auditService = auditService;
+            _ouService = ouService;
             _logger = logger;
         }
 
@@ -34,8 +40,8 @@ namespace PCGroupCloningApp.Api
 
             try
             {
-                _logger.LogInformation("Starting clone operation: {Source} → {Target}",
-                    request.SourceComputer, request.TargetComputer);
+                _logger.LogInformation("Starting clone operation: {Source} → {Target} (KeepSource: {KeepSource})",
+                    request.SourceComputer, request.TargetComputer, request.KeepSourceInPlace);
 
                 // Step 1: Get current groups on target computer
                 var targetCurrentGroups = await _adService.GetComputerGroupsDetailedAsync(request.TargetComputer);
@@ -60,12 +66,12 @@ namespace PCGroupCloningApp.Api
                         return Ok(new { success = false, errors = errors, message = "Operation failed during group removal" });
                     }
 
-                    operations.Add($"Removed {groupsToRemove.Count} existing groups");
+                    operations.Add($"Removed {groupsToRemove.Count} existing groups from target");
                 }
                 else
                 {
                     _logger.LogInformation("No non-system groups to remove from target computer {Target}", request.TargetComputer);
-                    operations.Add("No existing groups to remove");
+                    operations.Add("No existing groups to remove from target");
                 }
 
                 // Step 3: Prepare groups to add (with Office conversion)
@@ -94,8 +100,8 @@ namespace PCGroupCloningApp.Api
                     }
                 }
 
-                // Step 5: Move to same OU if requested
-                if (request.MoveToSameOU && !string.IsNullOrEmpty(request.SourceComputerOU))
+                // Step 5: ALWAYS move target to same OU as source
+                if (!string.IsNullOrEmpty(request.SourceComputerOU))
                 {
                     _logger.LogInformation("Moving target computer {Target} to same OU as source: {OU}",
                         request.TargetComputer, request.SourceComputerOU);
@@ -103,18 +109,61 @@ namespace PCGroupCloningApp.Api
                     var ouMoveSuccess = await _adService.MoveComputerToOUAsync(request.TargetComputer, request.SourceComputerOU);
                     if (ouMoveSuccess)
                     {
-                        operations.Add("Moved to source OU");
+                        operations.Add("Moved target to source OU");
                         _logger.LogInformation("Successfully moved {Target} to OU: {OU}", request.TargetComputer, request.SourceComputerOU);
                     }
                     else
                     {
                         errorCount++;
-                        errors.Add("Failed to move computer to source OU");
+                        errors.Add("Failed to move target computer to source OU");
                         _logger.LogError("Failed to move {Target} to OU: {OU}", request.TargetComputer, request.SourceComputerOU);
                     }
                 }
+                else
+                {
+                    _logger.LogWarning("No source OU provided - target computer not moved");
+                    operations.Add("No source OU to move target to");
+                }
 
-                // Step 6: Log the operation
+                // Step 6: Move source computer to retired OU (unless KeepSourceInPlace is true)
+                if (!request.KeepSourceInPlace)
+                {
+                    var retiredOU = await _ouService.GetRetiredComputersOUAsync();
+
+                    if (!string.IsNullOrEmpty(retiredOU))
+                    {
+                        _logger.LogInformation("Moving source computer {Source} to retired OU: {RetiredOU}",
+                            request.SourceComputer, retiredOU);
+
+                        var retiredMoveSuccess = await _adService.MoveComputerToOUAsync(request.SourceComputer, retiredOU);
+                        if (retiredMoveSuccess)
+                        {
+                            operations.Add("Moved source to retired OU");
+                            _logger.LogInformation("Successfully moved source {Source} to retired OU: {OU}",
+                                request.SourceComputer, retiredOU);
+                        }
+                        else
+                        {
+                            errorCount++;
+                            errors.Add("Failed to move source computer to retired OU");
+                            _logger.LogError("Failed to move source {Source} to retired OU: {OU}",
+                                request.SourceComputer, retiredOU);
+                        }
+                    }
+                    else
+                    {
+                        _logger.LogWarning("No retired computers OU configured - source computer not moved");
+                        operations.Add("No retired OU configured - source not moved");
+                    }
+                }
+                else
+                {
+                    _logger.LogInformation("KeepSourceInPlace is true - source computer {Source} not moved",
+                        request.SourceComputer);
+                    operations.Add("Source kept in original location (by request)");
+                }
+
+                // Step 7: Log the operation
                 var isSuccess = errorCount == 0;
                 await _auditService.LogOperationAsync(
                     "Clone Groups (Enhanced)",
@@ -124,11 +173,11 @@ namespace PCGroupCloningApp.Api
                     request.AdditionalGroups,
                     isSuccess,
                     errorCount > 0 ? string.Join("; ", errors) : null,
-                    $"Operations: {string.Join(", ", operations)}. Success: {successCount}, Errors: {errorCount}. Groups removed: {groupsToRemove.Count}"
+                    $"Operations: {string.Join(", ", operations)}. Success: {successCount}, Errors: {errorCount}. Groups removed: {groupsToRemove.Count}. KeepSourceInPlace: {request.KeepSourceInPlace}"
                 );
 
                 var message = isSuccess
-                    ? $"Successfully completed clone operation! Added {successCount} groups."
+                    ? $"Successfully completed clone operation! Added {successCount} groups to target."
                     : $"Clone completed with {successCount} successes and {errorCount} errors";
 
                 return Ok(new
@@ -186,7 +235,9 @@ namespace PCGroupCloningApp.Api
                 ["LSS-App-Office-Professional-2021-Academic"] = "LSS-App-Office-Professional",
                 ["LSS-App-Office-Professional-2021-Corporate"] = "LSS-App-Office-Professional",
                 ["LSS-App-Office-Standard-2021-Academic"] = "LSS-App-Office-Standard",
-                ["LSS-App-Office-Standard-2021-Corporate"] = "LSS-App-Office-Standard"
+                ["LSS-App-Office-Standard-2021-Corporate"] = "LSS-App-Office-Standard",
+                ["LSS-App-Office-Visio-Standard-2021"] = "LSS-App-Office-Visio-Standard",
+                ["LSS-App-Office-Project-Standard-2021"] = "LSS-App-Office-Project-Standard"
             };
 
             foreach (var group in sourceGroups)
@@ -213,8 +264,10 @@ namespace PCGroupCloningApp.Api
             public string TargetComputer { get; set; } = string.Empty;
             public List<string> SelectedGroups { get; set; } = new();
             public List<string> AdditionalGroups { get; set; } = new();
-            public bool MoveToSameOU { get; set; }
             public string SourceComputerOU { get; set; } = string.Empty;
+
+            // NEW: Replace MoveToSameOU with KeepSourceInPlace
+            public bool KeepSourceInPlace { get; set; } = false;
         }
     }
 }

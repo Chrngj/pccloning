@@ -124,11 +124,27 @@
                                 <li><strong>Groups:</strong> <span id="previewGroupCount">0</span> + <span id="previewAdditionalCount">0</span> additional</li>
                             </ul>
 
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="moveToSameOU" checked tabindex="7">
-                                <label class="form-check-label" for="moveToSameOU">
-                                    Move target to same OU as source
-                                </label>
+                            <!-- Updated Checkbox Section -->
+                            <div class="mb-3">
+                                <div class="alert alert-info py-2 mb-2">
+                                    <small>
+                                        <i class="fas fa-info-circle"></i>
+                                        <strong>Automatic operations:</strong><br>
+                                        • Target will be moved to same OU as source<br>
+                                        • Office groups will be upgraded if target name contains 'A' or 'a'
+                                    </small>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="keepSourceInPlace" tabindex="7">
+                                    <label class="form-check-label" for="keepSourceInPlace">
+                                        <i class="fas fa-shield-alt text-warning"></i>
+                                        Keep source computer in current location
+                                    </label>
+                                    <small class="form-text text-muted d-block">
+                                        If unchecked, source will be moved to the configured retired computers OU
+                                    </small>
+                                </div>
                             </div>
 
                             <div class="d-grid">
@@ -230,6 +246,21 @@
         .dropdown-item:hover {
             background-color: #f8f9fa;
         }
+
+    /* Enhanced checkbox styling */
+    .form-check-label {
+        font-weight: 500;
+    }
+
+        .form-check-label .fas {
+            margin-right: 0.5rem;
+        }
+
+    /* Info alert styling */
+    .alert-info {
+        background-color: #e7f3ff;
+        border-left: 4px solid #0d6efd;
+    }
 </style>
 
 @section Scripts {

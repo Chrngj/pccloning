@@ -1,0 +1,500 @@
+﻿@page "/auditlog"
+@model PCGroupCloningApp.Pages.AuditLogModel
+@{
+    ViewData["Title"] = "Audit Log";
+}
+
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">
+                <i class="fas fa-history"></i> Audit Log
+                <small class="text-muted">(@Model.TotalRecords total records)</small>
+            </h2>
+        </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <button class="btn btn-link p-0 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#filtersCollapse">
+                    <i class="fas fa-filter"></i> Filters
+                    <i class="fas fa-chevron-down ms-2"></i>
+                </button>
+            </h5>
+        </div>
+        <div class="collapse show" id="filtersCollapse">
+            <div class="card-body">
+                <form method="post">
+                    <div class="row">
+                        <!-- Date Range -->
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label asp-for="Filters.FromDate" class="form-label"></label>
+                                <input asp-for="Filters.FromDate" class="form-control" type="date" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label asp-for="Filters.ToDate" class="form-label"></label>
+                                <input asp-for="Filters.ToDate" class="form-control" type="date" />
+                            </div>
+                        </div>
+
+                        <!-- User and Operation -->
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label asp-for="Filters.Username" class="form-label"></label>
+                                <select asp-for="Filters.Username" class="form-select">
+                                    <option value="">All Users</option>
+                                    @foreach (var username in Model.AvailableUsernames)
+                                    {
+                                        <option value="@username">@username</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label asp-for="Filters.Operation" class="form-label"></label>
+                                <select asp-for="Filters.Operation" class="form-select">
+                                    <option value="">All Operations</option>
+                                    @foreach (var operation in Model.AvailableOperations)
+                                    {
+                                        <option value="@operation">@operation</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Computer Names -->
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label asp-for="Filters.SourceComputer" class="form-label"></label>
+                                <input asp-for="Filters.SourceComputer" class="form-control" placeholder="Search source computer..." />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label asp-for="Filters.TargetComputer" class="form-label"></label>
+                                <input asp-for="Filters.TargetComputer" class="form-control" placeholder="Search target computer..." />
+                            </div>
+                        </div>
+
+                        <!-- Success Filter and Error Messages -->
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">Success Status</label>
+                                <select asp-for="Filters.Success" class="form-select">
+                                    <option value="">All Results</option>
+                                    <option value="true">Success Only</option>
+                                    <option value="false">Failed Only</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label asp-for="Filters.ErrorMessage" class="form-label"></label>
+                                <input asp-for="Filters.ErrorMessage" class="form-control" placeholder="Search in error messages..." />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Display Options -->
+                        <div class="col-md-2">
+                            <div class="mb-3">
+                                <label asp-for="Filters.PageSize" class="form-label"></label>
+                                <select asp-for="Filters.PageSize" class="form-select">
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="mb-3">
+                                <label asp-for="Filters.SortBy" class="form-label"></label>
+                                <select asp-for="Filters.SortBy" class="form-select">
+                                    <option value="Timestamp">Timestamp</option>
+                                    <option value="Username">Username</option>
+                                    <option value="Operation">Operation</option>
+                                    <option value="SourceComputer">Source Computer</option>
+                                    <option value="TargetComputer">Target Computer</option>
+                                    <option value="Success">Success</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="mb-3">
+                                <label asp-for="Filters.SortDirection" class="form-label"></label>
+                                <select asp-for="Filters.SortDirection" class="form-select">
+                                    <option value="desc">Newest First</option>
+                                    <option value="asc">Oldest First</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end">
+                            <div class="mb-3 d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Apply Filters
+                                </button>
+                                <a href="/auditlog" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times"></i> Clear Filters
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hidden fields to maintain sort state -->
+                    <input type="hidden" asp-for="Filters.SortBy" />
+                    <input type="hidden" asp-for="Filters.SortDirection" />
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Table -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="fas fa-table"></i> Results
+                @if (Model.TotalRecords > 0)
+                {
+                    <small class="text-muted">
+                        (Showing @((Model.CurrentPage - 1) * Model.PageSize + 1)-@Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalRecords) of @Model.TotalRecords)
+                    </small>
+                }
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            @if (Model.AuditLogs.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>
+                                    <a href="#" onclick="sortTable('Timestamp')" class="text-decoration-none text-dark">
+                                        Timestamp <i class="fas @Model.GetSortIcon("Timestamp")"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="#" onclick="sortTable('Username')" class="text-decoration-none text-dark">
+                                        User <i class="fas @Model.GetSortIcon("Username")"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="#" onclick="sortTable('Operation')" class="text-decoration-none text-dark">
+                                        Operation <i class="fas @Model.GetSortIcon("Operation")"></i>
+                                    </a>
+                                </th>
+                                <th>Source → Target</th>
+                                <th class="text-center">
+                                    <a href="#" onclick="sortTable('Success')" class="text-decoration-none text-dark">
+                                        Status <i class="fas @Model.GetSortIcon("Success")"></i>
+                                    </a>
+                                </th>
+                                <th class="text-center">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var log in Model.AuditLogs)
+                            {
+                                <tr class="@(log.Success ? "" : "table-warning")">
+                                    <td>
+                                        <small>@log.Timestamp.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">@log.Username</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">@log.Operation</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="text-muted small">@log.SourceComputer</span>
+                                            <i class="fas fa-arrow-right mx-2 text-muted"></i>
+                                            <span class="fw-medium">@log.TargetComputer</span>
+                                        </div>
+                                    </td>
+                                   <td class="text-center">
+    @if (log.Success)
+    {
+        <span class="badge bg-success">
+            <i class="fas fa-check"></i> Success
+        </span>
+    }
+    else
+    {
+        <span class="badge bg-danger">
+            <i class="fas fa-times"></i> Failed
+        </span>
+    }
+</td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="showDetails(@log.Id)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No records found</h5>
+                    <p class="text-muted">Try adjusting your filters or check back later.</p>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            <div class="card-footer">
+                <nav aria-label="Audit log pagination">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                            <a class="page-link" href="?pageNumber=1&@(Html.Raw(Request.QueryString.ToString().Replace("pageNumber=" + Model.CurrentPage, "").TrimStart('&')))" aria-label="First">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                            <a class="page-link" href="?pageNumber=@(Model.CurrentPage - 1)&@(Html.Raw(Request.QueryString.ToString().Replace("pageNumber=" + Model.CurrentPage, "").TrimStart('&')))" aria-label="Previous">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+
+                        @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link" href="?pageNumber=@i&@(Html.Raw(Request.QueryString.ToString().Replace("pageNumber=" + Model.CurrentPage, "").TrimStart('&')))">@i</a>
+                            </li>
+                        }
+
+                        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link" href="?pageNumber=@(Model.CurrentPage + 1)&@(Html.Raw(Request.QueryString.ToString().Replace("pageNumber=" + Model.CurrentPage, "").TrimStart('&')))" aria-label="Next">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link" href="?pageNumber=@Model.TotalPages&@(Html.Raw(Request.QueryString.ToString().Replace("pageNumber=" + Model.CurrentPage, "").TrimStart('&')))" aria-label="Last">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">
+                    <i class="fas fa-info-circle"></i> Operation Details
+                </h5>
+                <button type="button" class="btn-close" onclick="closeModal()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="detailsContent">
+                <div class="text-center">
+                    <i class="fas fa-spinner fa-spin fa-2x"></i>
+                    <p class="mt-2">Loading details...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Sort table function
+    function sortTable(column) {
+        const currentSort = document.querySelector('input[name="Filters.SortBy"]').value;
+        const currentDirection = document.querySelector('input[name="Filters.SortDirection"]').value;
+
+        // Toggle direction if same column, otherwise default to desc
+        let newDirection = 'desc';
+        if (currentSort === column && currentDirection === 'desc') {
+            newDirection = 'asc';
+        }
+
+        document.querySelector('input[name="Filters.SortBy"]').value = column;
+        document.querySelector('input[name="Filters.SortDirection"]').value = newDirection;
+
+        // Submit form
+        document.querySelector('form').submit();
+    }
+
+    // Show details modal
+    async function showDetails(id) {
+    const content = document.getElementById('detailsContent');
+    
+    // Show loading
+    content.innerHTML = `
+        <div class="text-center">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p class="mt-2">Loading details...</p>
+        </div>
+    `;
+    
+    // Show modal with native JavaScript
+    const modalElement = document.getElementById('detailsModal');
+    modalElement.style.display = 'block';
+    modalElement.classList.add('show');
+    modalElement.setAttribute('aria-hidden', 'false');
+    
+    // Add backdrop
+    const backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop fade show';
+    backdrop.id = 'modal-backdrop';
+    document.body.appendChild(backdrop);
+    
+    try {
+        const response = await fetch(`/auditlog?handler=Details&id=${id}`);
+        const result = await response.json();
+        
+        if (result.success) {
+            const data = result.data;
+            content.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-clock"></i> Timestamp</h6>
+                        <p>${new Date(data.timestamp).toLocaleString()}</p>
+                        
+                        <h6><i class="fas fa-user"></i> User</h6>
+                        <p>${data.username}</p>
+                        
+                        <h6><i class="fas fa-cog"></i> Operation</h6>
+                        <p><span class="badge bg-info">${data.operation}</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-desktop"></i> Computers</h6>
+                        <p><strong>Source:</strong> ${data.sourceComputer}<br>
+                        <strong>Target:</strong> ${data.targetComputer}</p>
+                        
+                        <h6><i class="fas fa-check-circle"></i> Status</h6>
+                        <p>
+                            ${data.success ? 
+                                '<span class="badge bg-success">Success</span>' : 
+                                '<span class="badge bg-danger">Failed</span>'
+                            }
+                        </p>
+                    </div>
+                </div>
+                
+                ${data.groupsCloned ? `
+                    <h6><i class="fas fa-users"></i> Groups Cloned</h6>
+                    <p class="bg-light p-2 rounded">${data.groupsCloned}</p>
+                ` : ''}
+                
+                ${data.additionalGroups ? `
+                    <h6><i class="fas fa-plus"></i> Additional Groups</h6>
+                    <p class="bg-light p-2 rounded">${data.additionalGroups}</p>
+                ` : ''}
+                
+                ${data.details ? `
+                    <h6><i class="fas fa-info"></i> Details</h6>
+                    <p class="bg-light p-2 rounded">${data.details}</p>
+                ` : ''}
+                
+                ${data.errorMessage ? `
+                    <h6><i class="fas fa-exclamation-triangle"></i> Error Message</h6>
+                    <p class="bg-danger text-white p-2 rounded">${data.errorMessage}</p>
+                ` : ''}
+            `;
+        } else {
+            content.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Error loading details: ${result.message}
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading details:', error);
+        content.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                Error loading details. Please try again.
+            </div>
+        `;
+    }
+}
+
+// Function to close modal
+function closeModal() {
+    const modalElement = document.getElementById('detailsModal');
+    modalElement.style.display = 'none';
+    modalElement.classList.remove('show');
+    modalElement.setAttribute('aria-hidden', 'true');
+    
+    const backdrop = document.getElementById('modal-backdrop');
+    if (backdrop) {
+        backdrop.remove();
+    }
+}
+</script>
+
+<style>
+    .table th a {
+        color: inherit;
+    }
+
+    .table th a:hover {
+        color: #0d6efd;
+    }
+
+    .badge {
+        font-size: 0.8em;
+    }
+
+    .table-responsive {
+        border-radius: 0;
+    }
+
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .pagination .page-link {
+        color: #6c757d;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    .modal-body h6 {
+        color: #495057;
+        font-weight: 600;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .modal-body h6:first-child {
+        margin-top: 0;
+    }
+
+    .collapse .btn-link:hover {
+        color: #0d6efd;
+    }
+
+    .table-warning {
+        --bs-table-accent-bg: var(--bs-warning-bg-subtle);
+    }

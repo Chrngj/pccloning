@@ -1,9 +1,6 @@
-// Pages/Admin/Management.cshtml.cs
+﻿// Pages/Admin/Management.cshtml.cs
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using PCGroupCloningApp.Data;
-using PCGroupCloningApp.Models;
 using PCGroupCloningApp.Services;
 using System.ComponentModel.DataAnnotations;
 
@@ -15,23 +12,29 @@ namespace PCGroupCloningApp.Pages.Admin
         private readonly IOUService _ouService;
         private readonly ILogger<ManagementModel> _logger;
 
-        public ManagementModel(IServiceAccountService serviceAccountService, IOUService ouService, ILogger<ManagementModel> logger)
+        public ManagementModel(
+            IServiceAccountService serviceAccountService,
+            IOUService ouService,
+            ILogger<ManagementModel> logger)
         {
             _serviceAccountService = serviceAccountService;
             _ouService = ouService;
             _logger = logger;
         }
 
+        // Service Account Properties
         [BindProperty]
         public ServiceAccountInput ServiceAccount { get; set; } = new();
+        public bool HasExistingServiceAccount { get; set; }
+        public string? ServiceAccountStatus { get; set; }
 
+        // OU Configuration Properties  
         [BindProperty]
         public OUConfigurationInput OUConfig { get; set; } = new();
-
-        public string? StatusMessage { get; set; }
-        public bool HasExistingAccount { get; set; }
         public string? CurrentRetiredOU { get; set; }
+        public string? OUConfigStatus { get; set; }
 
+        // Input Models
         public class ServiceAccountInput
         {
             [Required]
@@ -55,92 +58,24 @@ namespace PCGroupCloningApp.Pages.Admin
             public string RetiredComputersOU { get; set; } = string.Empty;
         }
 
+        // Page Load
         public async Task OnGetAsync()
         {
-            await LoadDataAsync();
+            await LoadServiceAccountDataAsync();
+            await LoadOUConfigurationDataAsync();
         }
 
-        private async Task LoadDataAsync()
-        {
-            // Load existing service account
-            var existingAccount = await _serviceAccountService.GetActiveServiceAccountAsync();
-            HasExistingAccount = existingAccount != null;
-
-            if (existingAccount != null)
-            {
-                ServiceAccount.Domain = existingAccount.Domain;
-                ServiceAccount.Username = existingAccount.Username;
-            }
-
-            // Load current retired computers OU
-            CurrentRetiredOU = await _ouService.GetRetiredComputersOUAsync();
-            if (!string.IsNullOrEmpty(CurrentRetiredOU))
-            {
-                OUConfig.RetiredComputersOU = CurrentRetiredOU;
-            }
-        }
-
-        public async Task<IActionResult> OnPostTestSaveAsync()
-        {
-            StatusMessage = "TEST SAVE METHOD CALLED!";
-            return Page();
-        }
-
-        [IgnoreAntiforgeryToken]
-        public async Task<IActionResult> OnPostDirectDatabaseTestAsync()
-        {
-            try
-            {
-                // Reload data first
-                await LoadDataAsync();
-
-                // Direct database test
-                var testAccount = new ServiceAccount
-                {
-                    Domain = "TEST.lan",
-                    Username = "testuser",
-                    EncryptedPassword = "testpassword",
-                    LastUpdated = DateTime.Now,
-                    UpdatedBy = "TEST",
-                    IsActive = true
-                };
-
-                var context = HttpContext.RequestServices.GetRequiredService<ApplicationDbContext>();
-                context.ServiceAccounts.Add(testAccount);
-                var result = await context.SaveChangesAsync();
-
-                StatusMessage = $"Direct database test: {result} rows saved. Check database for 'testuser' entry.";
-
-                // Also test if we can read it back
-                var savedAccount = await context.ServiceAccounts
-                    .Where(sa => sa.Username == "testuser")
-                    .FirstOrDefaultAsync();
-
-                if (savedAccount != null)
-                {
-                    StatusMessage += " - Entry confirmed in database!";
-                }
-                else
-                {
-                    StatusMessage += " - WARNING: Could not read back from database!";
-                }
-            }
-            catch (Exception ex)
-            {
-                StatusMessage = $"Direct database test failed: {ex.Message}";
-                _logger.LogError(ex, "Direct database test failed");
-            }
-
-            return Page();
-        }
-        [IgnoreAntiforgeryToken]
+        // SERVICE ACCOUNT HANDLERS
         public async Task<IActionResult> OnPostSaveServiceAccountAsync()
         {
-            // Reload all data first
-            await LoadDataAsync();
+            _logger.LogInformation("SaveServiceAccount called - Username: {Username}", ServiceAccount.Username);
 
-            if (!ModelState.IsValid)
+            // Only validate ServiceAccount properties
+            if (string.IsNullOrWhiteSpace(ServiceAccount.Username) ||
+                string.IsNullOrWhiteSpace(ServiceAccount.Password))
             {
+                ServiceAccountStatus = "Username and password are required.";
+                await LoadAllDataAsync();
                 return Page();
             }
 
@@ -155,30 +90,39 @@ namespace PCGroupCloningApp.Pages.Admin
 
                 if (success)
                 {
-                    StatusMessage = "Service account credentials saved successfully!";
-                    HasExistingAccount = true;
-                    // Reload data to show updated state
-                    await LoadDataAsync();
+                    ServiceAccountStatus = "✅ Service account credentials saved successfully!";
+                    HasExistingServiceAccount = true;
+                    _logger.LogInformation("Service account saved successfully");
                 }
                 else
                 {
-                    StatusMessage = "Error saving service account credentials.";
+                    ServiceAccountStatus = "❌ Error saving service account credentials.";
+                    _logger.LogWarning("Failed to save service account");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error saving service account");
-                StatusMessage = "An error occurred while saving credentials.";
+                _logger.LogError(ex, "Exception saving service account");
+                ServiceAccountStatus = "❌ An error occurred while saving credentials.";
             }
 
+            // Clear password and reload data
             ServiceAccount.Password = string.Empty;
+            await LoadAllDataAsync();
             return Page();
         }
 
         public async Task<IActionResult> OnPostTestServiceAccountAsync()
         {
-            // Reload all data first
-            await LoadDataAsync();
+            _logger.LogInformation("TestServiceAccount called - Username: {Username}", ServiceAccount.Username);
+
+            if (string.IsNullOrWhiteSpace(ServiceAccount.Username) ||
+                string.IsNullOrWhiteSpace(ServiceAccount.Password))
+            {
+                ServiceAccountStatus = "Username and password are required for testing.";
+                await LoadAllDataAsync();
+                return Page();
+            }
 
             try
             {
@@ -187,53 +131,103 @@ namespace PCGroupCloningApp.Pages.Admin
                     ServiceAccount.Username,
                     ServiceAccount.Password);
 
-                StatusMessage = success
-                    ? "Connection test successful! Credentials are working."
-                    : "Connection test failed. Please check your credentials.";
+                ServiceAccountStatus = success
+                    ? "✅ Connection test successful! Credentials are working."
+                    : "❌ Connection test failed. Please check your credentials.";
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error testing service account");
-                StatusMessage = "Connection test failed with error.";
+                _logger.LogError(ex, "Exception testing service account");
+                ServiceAccountStatus = "❌ Connection test failed with error.";
             }
 
+            await LoadAllDataAsync();
             return Page();
         }
 
+        // OU CONFIGURATION HANDLERS
         public async Task<IActionResult> OnPostSaveOUConfigAsync()
         {
-            // Reload all data first
-            await LoadDataAsync();
+            _logger.LogInformation("SaveOUConfig called - OU: {OU}", OUConfig.RetiredComputersOU);
 
             if (string.IsNullOrWhiteSpace(OUConfig.RetiredComputersOU))
             {
-                StatusMessage = "Please select a retired computers OU.";
+                OUConfigStatus = "Please select a retired computers OU.";
+                await LoadAllDataAsync();
                 return Page();
             }
 
             try
             {
                 var username = User.Identity?.Name ?? "Unknown";
-                var success = await _ouService.SaveRetiredComputersOUAsync(OUConfig.RetiredComputersOU, username);
+                var success = await _ouService.SaveRetiredComputersOUAsync(
+                    OUConfig.RetiredComputersOU,
+                    username);
 
                 if (success)
                 {
-                    StatusMessage = "OU configuration saved successfully!";
-                    // Reload data to show updated state
-                    await LoadDataAsync();
+                    OUConfigStatus = "✅ OU configuration saved successfully!";
+                    _logger.LogInformation("OU configuration saved successfully");
                 }
                 else
                 {
-                    StatusMessage = "Error saving OU configuration.";
+                    OUConfigStatus = "❌ Error saving OU configuration.";
+                    _logger.LogWarning("Failed to save OU configuration");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error saving OU configuration");
-                StatusMessage = "An error occurred while saving OU configuration.";
+                _logger.LogError(ex, "Exception saving OU configuration");
+                OUConfigStatus = "❌ An error occurred while saving OU configuration.";
             }
 
+            await LoadAllDataAsync();
             return Page();
+        }
+
+        // DATA LOADING METHODS
+        private async Task LoadServiceAccountDataAsync()
+        {
+            try
+            {
+                var existingAccount = await _serviceAccountService.GetActiveServiceAccountAsync();
+                HasExistingServiceAccount = existingAccount != null;
+
+                if (existingAccount != null)
+                {
+                    ServiceAccount.Domain = existingAccount.Domain;
+                    ServiceAccount.Username = existingAccount.Username;
+                    // Never load password back to form
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading service account data");
+                ServiceAccountStatus = "Error loading service account information.";
+            }
+        }
+
+        private async Task LoadOUConfigurationDataAsync()
+        {
+            try
+            {
+                CurrentRetiredOU = await _ouService.GetRetiredComputersOUAsync();
+                if (!string.IsNullOrEmpty(CurrentRetiredOU))
+                {
+                    OUConfig.RetiredComputersOU = CurrentRetiredOU;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading OU configuration data");
+                OUConfigStatus = "Error loading OU configuration.";
+            }
+        }
+
+        private async Task LoadAllDataAsync()
+        {
+            await LoadServiceAccountDataAsync();
+            await LoadOUConfigurationDataAsync();
         }
     }
 }
