@@ -31,5 +31,12 @@ namespace PCGroupCloningApp.Models
         public string? ErrorMessage { get; set; }
 
         public string Details { get; set; } = string.Empty;
+
+        public string? SourceComputerOU { get; set; }
+        public string? SourceComputerOUDescription { get; set; }
+        public string? TargetComputerOU { get; set; }
+        public string? TargetComputerOUDescription { get; set; }
+        public string? SourceComputerDescription { get; set; }
+        public string? TargetComputerDescription { get; set; }
     }
 }

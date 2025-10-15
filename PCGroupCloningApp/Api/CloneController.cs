@@ -43,6 +43,15 @@ namespace PCGroupCloningApp.Api
                 _logger.LogInformation("Starting clone operation: {Source} → {Target} (KeepSource: {KeepSource})",
                     request.SourceComputer, request.TargetComputer, request.KeepSourceInPlace);
 
+                // Get full details for both computers
+                var (sourceOU, sourceOUDesc, sourceCompDesc) = await _adService.GetComputerDetailsAsync(request.SourceComputer);
+                var (targetOU, targetOUDesc, targetCompDesc) = await _adService.GetComputerDetailsAsync(request.TargetComputer);
+
+                _logger.LogInformation("Source - OU: {SourceOU}, OU Desc: {SourceOUDesc}, Computer Desc: {SourceCompDesc}",
+                    sourceOU, sourceOUDesc, sourceCompDesc);
+                _logger.LogInformation("Target - OU: {TargetOU}, OU Desc: {TargetOUDesc}, Computer Desc: {TargetCompDesc}",
+                    targetOU, targetOUDesc, targetCompDesc);
+
                 // Step 1: Get current groups on target computer
                 var targetCurrentGroups = await _adService.GetComputerGroupsDetailedAsync(request.TargetComputer);
                 _logger.LogInformation("Target computer {Target} currently has {GroupCount} groups: {Groups}",
@@ -62,7 +71,7 @@ namespace PCGroupCloningApp.Api
                     if (!removeSuccess)
                     {
                         errors.Add("Failed to remove existing groups from target computer - operation stopped");
-                        await LogFailedOperation(request, errors, "Group removal failed");
+                        await LogFailedOperation(request, errors, "Group removal failed", sourceOU, sourceOUDesc, targetOU, targetOUDesc, sourceCompDesc, targetCompDesc);
                         return Ok(new { success = false, errors = errors, message = "Operation failed during group removal" });
                     }
 
@@ -164,6 +173,7 @@ namespace PCGroupCloningApp.Api
                 }
 
                 // Step 7: Log the operation
+                // Step 7: Log the operation
                 var isSuccess = errorCount == 0;
                 await _auditService.LogOperationAsync(
                     "Clone Groups (Enhanced)",
@@ -172,6 +182,12 @@ namespace PCGroupCloningApp.Api
                     request.SelectedGroups,
                     request.AdditionalGroups,
                     isSuccess,
+                    sourceOU,
+                    sourceOUDesc,
+                    targetOU,
+                    targetOUDesc,
+                    sourceCompDesc,
+                    targetCompDesc,
                     errorCount > 0 ? string.Join("; ", errors) : null,
                     $"Operations: {string.Join(", ", operations)}. Success: {successCount}, Errors: {errorCount}. Groups removed: {groupsToRemove.Count}. KeepSourceInPlace: {request.KeepSourceInPlace}"
                 );
@@ -195,21 +211,29 @@ namespace PCGroupCloningApp.Api
                 _logger.LogError(ex, "Clone operation failed with exception");
 
                 await _auditService.LogOperationAsync(
-                    "Clone Groups (Enhanced)",
-                    request.SourceComputer,
-                    request.TargetComputer,
-                    request.SelectedGroups,
-                    request.AdditionalGroups,
-                    false,
-                    ex.Message,
-                    "Operation failed with exception"
-                );
+                   "Clone Groups (Enhanced)",
+                   request.SourceComputer,
+                   request.TargetComputer,
+                   request.SelectedGroups,
+                   request.AdditionalGroups,
+                   false,
+                   "", // sourceOU
+                   "", // sourceOUDesc
+                   "", // targetOU
+                   "", // targetOUDesc
+                   "", // sourceCompDesc
+                   "", // targetCompDesc
+                   ex.Message,
+                   "Operation failed with exception"
+               );
 
                 return StatusCode(500, new { success = false, message = "Clone operation failed", error = ex.Message });
             }
         }
 
-        private async Task LogFailedOperation(CloneRequest request, List<string> errors, string details)
+        private async Task LogFailedOperation(CloneRequest request, List<string> errors, string details,
+            string sourceOU = "", string sourceOUDesc = "", string targetOU = "", string targetOUDesc = "",
+            string sourceCompDesc = "", string targetCompDesc = "")
         {
             await _auditService.LogOperationAsync(
                 "Clone Groups (Enhanced)",
@@ -218,6 +242,12 @@ namespace PCGroupCloningApp.Api
                 request.SelectedGroups,
                 request.AdditionalGroups,
                 false,
+                sourceOU,
+                sourceOUDesc,
+                targetOU,
+                targetOUDesc,
+                sourceCompDesc,
+                targetCompDesc,
                 string.Join("; ", errors),
                 details
             );

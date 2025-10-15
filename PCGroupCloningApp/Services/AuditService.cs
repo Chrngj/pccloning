@@ -19,7 +19,11 @@ namespace PCGroupCloningApp.Services
         }
 
         public async Task LogOperationAsync(string operation, string sourceComputer, string targetComputer,
-            List<string> groupsCloned, List<string> additionalGroups, bool success, string? errorMessage = null, string details = "")
+    List<string> groupsCloned, List<string> additionalGroups, bool success,
+    string? sourceComputerOU = null, string? sourceComputerOUDescription = null,
+    string? targetComputerOU = null, string? targetComputerOUDescription = null,
+    string? sourceComputerDescription = null, string? targetComputerDescription = null,
+    string? errorMessage = null, string details = "")
         {
             try
             {
@@ -35,6 +39,12 @@ namespace PCGroupCloningApp.Services
                     GroupsCloned = string.Join(", ", groupsCloned),
                     AdditionalGroups = string.Join(", ", additionalGroups),
                     Success = success,
+                    SourceComputerOU = sourceComputerOU,
+                    SourceComputerOUDescription = sourceComputerOUDescription,
+                    TargetComputerOU = targetComputerOU,
+                    TargetComputerOUDescription = targetComputerOUDescription,
+                    SourceComputerDescription = sourceComputerDescription,
+                    TargetComputerDescription = targetComputerDescription,
                     ErrorMessage = errorMessage,
                     Details = details
                 };

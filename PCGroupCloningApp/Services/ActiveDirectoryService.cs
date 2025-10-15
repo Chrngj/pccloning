@@ -380,6 +380,79 @@ namespace PCGroupCloningApp.Services
             return string.Empty;
         }
 
+        public async Task<(string OU, string OUDescription, string ComputerDescription)> GetComputerDetailsAsync(string computerName)
+        {
+            try
+            {
+                using var entry = await GetDirectoryEntryAsync();
+                using var searcher = new DirectorySearcher(entry)
+                {
+                    Filter = $"(&(objectClass=computer)(name={computerName}))",
+                    PropertiesToLoad = { "distinguishedName", "description" }
+                };
+
+                var result = await Task.Run(() => searcher.FindOne());
+
+                if (result != null)
+                {
+                    // Get computer description
+                    string computerDescription = string.Empty;
+                    if (result.Properties["description"].Count > 0)
+                    {
+                        computerDescription = result.Properties["description"][0]?.ToString() ?? string.Empty;
+                    }
+
+                    // Get OU path
+                    if (result.Properties["distinguishedName"][0] is string dn)
+                    {
+                        var ouStart = dn.IndexOf(",OU=");
+                        if (ouStart > 0)
+                        {
+                            var ouPath = dn.Substring(ouStart + 1);
+
+                            // Hent OU description
+                            var ouDescription = await GetOUDescriptionAsync(ouPath);
+
+                            return (ouPath, ouDescription, computerDescription);
+                        }
+                    }
+
+                    return (string.Empty, string.Empty, computerDescription);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting details for computer: {ComputerName}", computerName);
+            }
+
+            return (string.Empty, string.Empty, string.Empty);
+        }
+
+        private async Task<string> GetOUDescriptionAsync(string ouPath)
+        {
+            try
+            {
+                var ldapPath = $"LDAP://{_domain}/{ouPath}";
+
+                var credentials = await _serviceAccountService.GetCredentialsAsync();
+
+                using var ouEntry = credentials.HasValue
+                    ? new DirectoryEntry(ldapPath, credentials.Value.Username, credentials.Value.Password, AuthenticationTypes.Secure)
+                    : new DirectoryEntry(ldapPath);
+
+                if (ouEntry.Properties["description"].Count > 0)
+                {
+                    return ouEntry.Properties["description"][0]?.ToString() ?? string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting description for OU: {OU}", ouPath);
+            }
+
+            return string.Empty;
+        }
+
         private static string ExtractCNFromDN(string distinguishedName)
         {
             if (distinguishedName.StartsWith("CN="))
