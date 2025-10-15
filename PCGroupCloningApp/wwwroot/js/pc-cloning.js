@@ -97,12 +97,15 @@ async function selectSourceComputer(computerName) {
 }
 
 // Select target computer
-function selectTargetComputer(computerName) {
+async function selectTargetComputer(computerName) {
     selectedTargetComputer = computerName;
 
     document.getElementById('targetComputerSearch').value = computerName;
     document.getElementById('selectedTargetComputer').textContent = computerName;
     hideDropdown('targetComputerDropdown');
+
+    // Get computer OU
+    await loadTargetComputerDetails(computerName);
 
     // Show target computer info
     document.getElementById('targetComputerInfo').style.display = 'block';
@@ -130,6 +133,21 @@ async function loadSourceComputerDetails(computerName) {
 
     } catch (error) {
         console.error('Error loading source computer details:', error);
+    }
+}
+
+// Load target computer details (OU)
+async function loadTargetComputerDetails(computerName) {
+    try {
+        // Get computer OU
+        const ouResponse = await fetch(`/api/computer/${encodeURIComponent(computerName)}/ou`);
+        const ouData = await ouResponse.json();
+        const targetComputerOU = ouData.ou || '';
+
+        document.getElementById('targetComputerOU').textContent = targetComputerOU || 'Unknown';
+
+    } catch (error) {
+        console.error('Error loading target computer details:', error);
     }
 }
 
