@@ -297,7 +297,7 @@ namespace PCGroupCloningApp.Api
             public string SourceComputerOU { get; set; } = string.Empty;
 
             // NEW: Replace MoveToSameOU with KeepSourceInPlace
-            public bool KeepSourceInPlace { get; set; } = false;
+            public bool KeepSourceInPlace { get; set; } = true;
         }
     }
 }

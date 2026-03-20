@@ -389,7 +389,7 @@ function resetPage() {
     document.getElementById('additionalGroupsList').innerHTML = '<small class="text-muted">No additional groups selected</small>';
 
     // Reset checkbox
-    document.getElementById('keepSourceInPlace').checked = false;
+    document.getElementById('keepSourceInPlace').checked = true;
 
     // Update preview and button
     updatePreview();
