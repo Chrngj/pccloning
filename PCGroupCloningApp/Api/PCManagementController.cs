@@ -44,13 +44,47 @@ namespace PCGroupCloningApp.Api
             try
             {
                 // Get current OU for logging
+                // Get current OU for logging
                 var currentOU = await _adService.GetComputerOUAsync(request.ComputerName);
                 _logger.LogInformation("Computer {Computer} current OU: {CurrentOU}",
                     request.ComputerName, currentOU);
 
+                // Remove all groups except protected ones
+                var protectedGroups = new[] { "ADAuditPlusWS", "Domain Computers" };
+                var currentGroups = await _adService.GetComputerGroupsDetailedAsync(request.ComputerName);
+                var groupsToRemove = currentGroups.Where(g => !protectedGroups.Contains(g)).ToList();
+
+                if (groupsToRemove.Any())
+                {
+                    _logger.LogInformation("Removing {Count} groups from {Computer}: {Groups}",
+                        groupsToRemove.Count, request.ComputerName, string.Join(", ", groupsToRemove));
+
+                    var removeSuccess = await _adService.RemoveComputerFromMultipleGroupsAsync(request.ComputerName, groupsToRemove);
+                    if (!removeSuccess)
+                    {
+                        _logger.LogError("Failed to remove groups from {Computer}", request.ComputerName);
+
+                        await _auditService.LogOperationAsync(
+                            "Move to NyRullet",
+                            request.ComputerName,
+                            "NyRullet",
+                            new List<string>(),
+                            new List<string>(),
+                            false,
+                            "Failed to remove groups from computer",
+                            $"Attempted to remove {groupsToRemove.Count} groups. Groups: {string.Join(", ", groupsToRemove)}"
+                        );
+
+                        return Ok(new
+                        {
+                            success = false,
+                            message = "Failed to remove groups from computer. Computer was NOT moved."
+                        });
+                    }
+                }
+
                 // Move computer to NyRullet OU
                 var success = await _adService.MoveComputerToOUAsync(request.ComputerName, NYRULLET_OU);
-
                 if (success)
                 {
                     _logger.LogInformation("Successfully moved {Computer} to NyRullet OU",
@@ -65,7 +99,7 @@ namespace PCGroupCloningApp.Api
                         new List<string>(),    // No additional groups
                         true,
                         null,
-                        $"Moved from: {currentOU}. Reset operation successful."
+                        $"Moved from: {currentOU}. Removed {groupsToRemove.Count} groups. Reset operation successful."
                     );
 
                     return Ok(new
