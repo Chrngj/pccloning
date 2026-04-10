@@ -16,5 +16,6 @@ namespace PCGroupCloningApp.Services
         Task<List<string>> GetComputerGroupsDetailedAsync(string computerName);
         Task<bool> RemoveComputerFromMultipleGroupsAsync(string computerName, List<string> groupNames);
         Task<(string OU, string OUDescription, string ComputerDescription)> GetComputerDetailsAsync(string computerName);
+        Task<bool> DeleteComputerAsync(string computerName);
     }
 }

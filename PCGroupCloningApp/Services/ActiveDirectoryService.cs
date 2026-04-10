@@ -34,7 +34,36 @@ namespace PCGroupCloningApp.Services
                 return new DirectoryEntry(ldapPath);
             }
         }
+        public async Task<bool> DeleteComputerAsync(string computerName)
+        {
+            try
+            {
+                var credentials = await _serviceAccountService.GetCredentialsAsync();
+                using var context = credentials.HasValue
+                    ? new PrincipalContext(ContextType.Domain, _domain, credentials.Value.Username, credentials.Value.Password)
+                    : new PrincipalContext(ContextType.Domain, _domain);
 
+                var computer = ComputerPrincipal.FindByIdentity(context, computerName);
+                if (computer == null)
+                {
+                    _logger.LogWarning("Computer {ComputerName} not found - cannot delete", computerName);
+                    return false;
+                }
+
+                _logger.LogInformation("Deleting computer {ComputerName} from AD (DN: {DN})",
+                    computerName, computer.DistinguishedName);
+
+                await Task.Run(() => computer.Delete());
+
+                _logger.LogInformation("Successfully deleted computer {ComputerName} from AD", computerName);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting computer {ComputerName} from AD", computerName);
+                return false;
+            }
+        }
         public async Task<List<string>> SearchComputersAsync(string searchTerm)
         {
             var computers = new List<string>();
