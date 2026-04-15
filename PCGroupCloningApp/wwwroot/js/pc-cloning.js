@@ -6,6 +6,7 @@ let selectedTargetComputer = '';
 let sourceComputerOU = '';
 let sourceGroups = [];
 let additionalGroups = [];
+let customTargetOU = '';
 let searchTimeouts = {};
 
 // Initialize when page loads
@@ -21,6 +22,22 @@ function initializeEventListeners() {
 
     // Group search event listeners
     setupGroupSearch();
+
+    // Custom OU search event listeners
+    setupCustomOUSearch();
+
+    // Custom OU checkbox toggle
+    document.getElementById('useCustomTargetOU')?.addEventListener('change', function () {
+        const section = document.getElementById('customOUSection');
+        if (this.checked) {
+            section.style.display = 'block';
+            document.getElementById('customOUSearch').focus();
+        } else {
+            section.style.display = 'none';
+            clearCustomOU();
+        }
+        updateExecuteButton();
+    });
 
     // Button event listeners
     document.getElementById('selectAllGroups')?.addEventListener('click', selectAllGroups);
@@ -279,6 +296,97 @@ function deselectAllGroups() {
     updatePreview();
 }
 
+// =====================================================
+// Custom OU Search
+// =====================================================
+function setupCustomOUSearch() {
+    const input = document.getElementById('customOUSearch');
+    const dropdown = document.getElementById('customOUDropdown');
+
+    if (!input || !dropdown) return;
+
+    input.addEventListener('input', function (e) {
+        const term = e.target.value;
+        clearTimeout(searchTimeouts['ouSearch']);
+
+        if (term.length < 2) {
+            hideDropdown('customOUDropdown');
+            return;
+        }
+
+        searchTimeouts['ouSearch'] = setTimeout(async () => {
+            try {
+                const response = await fetch(`/api/ou/search?term=${encodeURIComponent(term)}`);
+                const ous = await response.json();
+                displayCustomOUDropdown(ous);
+            } catch (error) {
+                console.error('Error searching OUs:', error);
+            }
+        }, 300);
+    });
+
+    // Keyboard navigation for OU dropdown
+    input.addEventListener('keydown', function (e) {
+        const items = dropdown.querySelectorAll('.dropdown-item');
+        if (items.length === 0) return;
+
+        let selectedIndex = Array.from(items).findIndex(item => item.classList.contains('dropdown-item-highlighted'));
+
+        switch (e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+                updateHighlight(items, selectedIndex);
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                selectedIndex = Math.max(selectedIndex - 1, 0);
+                updateHighlight(items, selectedIndex);
+                break;
+            case 'Enter':
+                e.preventDefault();
+                if (selectedIndex >= 0 && selectedIndex < items.length) {
+                    items[selectedIndex].click();
+                }
+                break;
+            case 'Escape':
+                e.preventDefault();
+                hideDropdown('customOUDropdown');
+                break;
+        }
+    });
+}
+
+function displayCustomOUDropdown(ous) {
+    const dropdown = document.getElementById('customOUDropdown');
+
+    if (ous.length === 0) {
+        dropdown.innerHTML = '<div class="dropdown-item-text">No OUs found</div>';
+    } else {
+        dropdown.innerHTML = ous.map(ou =>
+            `<button type="button" class="dropdown-item" onclick="selectCustomOU('${ou.replace(/'/g, "\\'")}')">${ou}</button>`
+        ).join('');
+    }
+
+    dropdown.style.display = 'block';
+}
+
+function selectCustomOU(ouPath) {
+    customTargetOU = ouPath;
+    document.getElementById('customOUSearch').value = '';
+    document.getElementById('customOUPath').textContent = ouPath;
+    document.getElementById('customOUSelected').style.display = 'block';
+    hideDropdown('customOUDropdown');
+    updateExecuteButton();
+}
+
+function clearCustomOU() {
+    customTargetOU = '';
+    document.getElementById('customOUSearch').value = '';
+    document.getElementById('customOUSelected').style.display = 'none';
+    updateExecuteButton();
+}
+
 // Update preview section
 function updatePreview() {
     document.getElementById('previewSource').textContent = selectedSourceComputer || 'Not selected';
@@ -298,7 +406,8 @@ function getSelectedGroups() {
 // Update execute button state
 function updateExecuteButton() {
     const button = document.getElementById('executeClone');
-    const canExecute = selectedSourceComputer && selectedTargetComputer;
+    const useCustomOU = document.getElementById('useCustomTargetOU')?.checked || false;
+    const canExecute = selectedSourceComputer && selectedTargetComputer && (!useCustomOU || customTargetOU);
 
     button.disabled = !canExecute;
 
@@ -314,7 +423,8 @@ function updateExecuteButton() {
 // Execute clone operation
 async function executeClone() {
     const selectedGroups = getSelectedGroups();
-    const keepSourceInPlace = document.getElementById('keepSourceInPlace').checked; // NEW: Get checkbox value
+    const keepSourceInPlace = document.getElementById('keepSourceInPlace').checked;
+    const useCustomOU = document.getElementById('useCustomTargetOU')?.checked || false;
 
     if (!selectedSourceComputer || !selectedTargetComputer) {
         showAlert('Please select both source and target computers.', 'danger');
@@ -326,6 +436,11 @@ async function executeClone() {
         return;
     }
 
+    if (useCustomOU && !customTargetOU) {
+        showAlert('Please select a custom target OU or uncheck "Use custom target OU".', 'warning');
+        return;
+    }
+
     // Show loading state
     const button = document.getElementById('executeClone');
     const originalText = button.innerHTML;
@@ -333,19 +448,26 @@ async function executeClone() {
     button.disabled = true;
 
     try {
+        const requestBody = {
+            sourceComputer: selectedSourceComputer,
+            targetComputer: selectedTargetComputer,
+            selectedGroups: selectedGroups,
+            additionalGroups: additionalGroups,
+            sourceComputerOU: sourceComputerOU,
+            keepSourceInPlace: keepSourceInPlace
+        };
+
+        // Only include customTargetOU if the checkbox is checked and an OU is selected
+        if (useCustomOU && customTargetOU) {
+            requestBody.customTargetOU = customTargetOU;
+        }
+
         const response = await fetch('/api/clone/execute', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                sourceComputer: selectedSourceComputer,
-                targetComputer: selectedTargetComputer,
-                selectedGroups: selectedGroups,
-                additionalGroups: additionalGroups,
-                sourceComputerOU: sourceComputerOU,
-                keepSourceInPlace: keepSourceInPlace // NEW: Send checkbox value instead of moveToSameOU
-            })
+            body: JSON.stringify(requestBody)
         });
 
         const result = await response.json();
@@ -365,6 +487,7 @@ async function executeClone() {
         button.disabled = false;
     }
 }
+
 // Reset page for new clone operation
 function resetPage() {
     // Clear all selections
@@ -373,6 +496,7 @@ function resetPage() {
     sourceComputerOU = '';
     sourceGroups = [];
     additionalGroups = [];
+    customTargetOU = '';
 
     // Clear input fields
     document.getElementById('sourceComputerSearch').value = '';
@@ -388,8 +512,11 @@ function resetPage() {
     document.getElementById('sourceGroupsList').innerHTML = '<div class="col-12"><div class="text-muted text-center py-4"><i class="fas fa-arrow-up"></i><br>Select a source computer to see its groups</div></div>';
     document.getElementById('additionalGroupsList').innerHTML = '<small class="text-muted">No additional groups selected</small>';
 
-    // Reset checkbox
+    // Reset checkboxes
     document.getElementById('keepSourceInPlace').checked = true;
+    document.getElementById('useCustomTargetOU').checked = false;
+    document.getElementById('customOUSection').style.display = 'none';
+    clearCustomOU();
 
     // Update preview and button
     updatePreview();
@@ -531,5 +658,6 @@ function hideDropdownsOnClickOutside(e) {
         hideDropdown('sourceComputerDropdown');
         hideDropdown('targetComputerDropdown');
         hideDropdown('additionalGroupDropdown');
+        hideDropdown('customOUDropdown');
     }
 }

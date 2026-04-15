@@ -131,13 +131,12 @@
                                     <small>
                                         <i class="fas fa-info-circle"></i>
                                         <strong>Automatic operations:</strong><br>
-                                        • Target will be moved to same OU as source<br>
+                                        • Target will be moved to same OU as source (unless custom OU is specified)<br>
                                         • Office groups will be upgraded if target name contains 'A' or 'a'
                                     </small>
                                 </div>
 
-                                <!-- I Pages/Index.cshtml, linje ~117 -->
-                                <div class="form-check">
+                                <div class="form-check mb-2">
                                     <input class="form-check-input" type="checkbox" id="keepSourceInPlace" tabindex="7" checked>
                                     <label class="form-check-label" for="keepSourceInPlace">
                                         <i class="fas fa-shield-alt text-warning"></i>
@@ -146,6 +145,41 @@
                                     <small class="form-text text-muted d-block">
                                         If unchecked, source will be moved to the configured retired computers OU
                                     </small>
+                                </div>
+
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="useCustomTargetOU" tabindex="8">
+                                    <label class="form-check-label" for="useCustomTargetOU">
+                                        <i class="fas fa-folder-open text-primary"></i>
+                                        Use custom target OU
+                                    </label>
+                                    <small class="form-text text-muted d-block">
+                                        If checked, target will be moved to a specific OU instead of the source computer's OU
+                                    </small>
+                                </div>
+
+                                <!-- Custom OU Search (hidden by default) -->
+                                <div id="customOUSection" style="display: none;">
+                                    <div class="ms-4 mt-2 position-relative">
+                                        <label for="customOUSearch" class="form-label">
+                                            <small><i class="fas fa-search"></i> Search for target OU</small>
+                                        </label>
+                                        <input type="text" id="customOUSearch" class="form-control form-control-sm"
+                                               placeholder="Type OU name to search..." autocomplete="off" tabindex="9">
+                                        <div id="customOUDropdown" class="dropdown-menu w-100" style="display: none;"></div>
+                                        <div id="customOUSelected" class="mt-2" style="display: none;">
+                                            <div class="alert alert-success py-1 mb-0">
+                                                <small>
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <strong>Selected OU:</strong>
+                                                    <span id="customOUPath"></span>
+                                                    <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" onclick="clearCustomOU()" title="Clear selection">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 

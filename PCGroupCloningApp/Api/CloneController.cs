@@ -40,8 +40,9 @@ namespace PCGroupCloningApp.Api
 
             try
             {
-                _logger.LogInformation("Starting clone operation: {Source} → {Target} (KeepSource: {KeepSource})",
-                    request.SourceComputer, request.TargetComputer, request.KeepSourceInPlace);
+                _logger.LogInformation("Starting clone operation: {Source} → {Target} (KeepSource: {KeepSource}, CustomTargetOU: {CustomTargetOU})",
+                    request.SourceComputer, request.TargetComputer, request.KeepSourceInPlace,
+                    string.IsNullOrEmpty(request.CustomTargetOU) ? "None (use source OU)" : request.CustomTargetOU);
 
                 // Get full details for both computers
                 var (sourceOU, sourceOUDesc, sourceCompDesc) = await _adService.GetComputerDetailsAsync(request.SourceComputer);
@@ -109,29 +110,38 @@ namespace PCGroupCloningApp.Api
                     }
                 }
 
-                // Step 5: ALWAYS move target to same OU as source
-                if (!string.IsNullOrEmpty(request.SourceComputerOU))
-                {
-                    _logger.LogInformation("Moving target computer {Target} to same OU as source: {OU}",
-                        request.TargetComputer, request.SourceComputerOU);
+                // Step 5: Move target to OU - use custom OU if provided, otherwise source OU
+                var useCustomOU = !string.IsNullOrEmpty(request.CustomTargetOU);
+                var destinationOU = useCustomOU ? request.CustomTargetOU : request.SourceComputerOU;
 
-                    var ouMoveSuccess = await _adService.MoveComputerToOUAsync(request.TargetComputer, request.SourceComputerOU);
+                if (!string.IsNullOrEmpty(destinationOU))
+                {
+                    _logger.LogInformation("Moving target computer {Target} to {OUType} OU: {OU}",
+                        request.TargetComputer,
+                        useCustomOU ? "custom" : "source",
+                        destinationOU);
+
+                    var ouMoveSuccess = await _adService.MoveComputerToOUAsync(request.TargetComputer, destinationOU);
                     if (ouMoveSuccess)
                     {
-                        operations.Add("Moved target to source OU");
-                        _logger.LogInformation("Successfully moved {Target} to OU: {OU}", request.TargetComputer, request.SourceComputerOU);
+                        operations.Add(useCustomOU
+                            ? $"Moved target to custom OU: {destinationOU}"
+                            : "Moved target to source OU");
+                        _logger.LogInformation("Successfully moved {Target} to OU: {OU}", request.TargetComputer, destinationOU);
                     }
                     else
                     {
                         errorCount++;
-                        errors.Add("Failed to move target computer to source OU");
-                        _logger.LogError("Failed to move {Target} to OU: {OU}", request.TargetComputer, request.SourceComputerOU);
+                        errors.Add(useCustomOU
+                            ? $"Failed to move target computer to custom OU: {destinationOU}"
+                            : "Failed to move target computer to source OU");
+                        _logger.LogError("Failed to move {Target} to OU: {OU}", request.TargetComputer, destinationOU);
                     }
                 }
                 else
                 {
-                    _logger.LogWarning("No source OU provided - target computer not moved");
-                    operations.Add("No source OU to move target to");
+                    _logger.LogWarning("No destination OU provided - target computer not moved");
+                    operations.Add("No destination OU to move target to");
                 }
 
                 // Step 6: Move source computer to retired OU (unless KeepSourceInPlace is true)
@@ -173,7 +183,6 @@ namespace PCGroupCloningApp.Api
                 }
 
                 // Step 7: Log the operation
-                // Step 7: Log the operation
                 var isSuccess = errorCount == 0;
                 await _auditService.LogOperationAsync(
                     "Clone Groups (Enhanced)",
@@ -189,7 +198,7 @@ namespace PCGroupCloningApp.Api
                     sourceCompDesc,
                     targetCompDesc,
                     errorCount > 0 ? string.Join("; ", errors) : null,
-                    $"Operations: {string.Join(", ", operations)}. Success: {successCount}, Errors: {errorCount}. Groups removed: {groupsToRemove.Count}. KeepSourceInPlace: {request.KeepSourceInPlace}"
+                    $"Operations: {string.Join(", ", operations)}. Success: {successCount}, Errors: {errorCount}. Groups removed: {groupsToRemove.Count}. KeepSourceInPlace: {request.KeepSourceInPlace}. CustomTargetOU: {(useCustomOU ? request.CustomTargetOU : "None (used source OU)")}"
                 );
 
                 var message = isSuccess
@@ -295,9 +304,8 @@ namespace PCGroupCloningApp.Api
             public List<string> SelectedGroups { get; set; } = new();
             public List<string> AdditionalGroups { get; set; } = new();
             public string SourceComputerOU { get; set; } = string.Empty;
-
-            // NEW: Replace MoveToSameOU with KeepSourceInPlace
             public bool KeepSourceInPlace { get; set; } = true;
+            public string? CustomTargetOU { get; set; }
         }
     }
 }
